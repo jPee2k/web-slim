@@ -1,7 +1,18 @@
 {
+    "name": "jpee/web-dev",
+    "description": "Start the project base on slim/slim.",
+    "authors": [{
+        "name": "jPee2k",
+        "email": "kipishept@gmail.com"
+    }],
+    "autoload": {
+        "psr-4": { "Web\\Dev\\": "src/" }
+    },
     "require": {
         "slim/slim": "^4.5",
         "slim/psr7": "^1.1",
-        "slim/http": "^1.0"
+        "slim/http": "^1.0",
+        "slim/php-view": "^2.2",
+        "php-di/php-di": "^6.1"
     }
 }
