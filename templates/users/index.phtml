@@ -1,15 +1,18 @@
-<!-- // https://ru.hexlet.io/courses/php-mvc/lessons/template/theory_unit -->
-<!-- BEGIN -->
-<table>
-    <?php foreach ($users as $user) : ?>
-        <tr>
-            <td>
-                <?= $user['id'] ?>
-            </td>
-            <td>
-                <a href="/users/<?= $user['id'] ?>"><?= $user['firstName'] ?></a>
-            </td>
-        </tr>
-    <?php endforeach ?>
-</table>
-<!-- END -->
+<?php foreach ($users as $user): ?>
+    <div>
+        <?= htmlspecialchars($user) ?>
+    </div>
+<?php endforeach ?>
+
+<!-- SEARCHING FORM -->
+<form action="/users" method="GET">
+    <input type="search" name="user" value="<?= htmlspecialchars($showRequest) ?>" required>
+    <input type="submit" value="search">
+</form>
+
+<!-- RESULT -->
+<?php foreach ($search as $find): ?>
+    <div>
+        <?= htmlspecialchars($find) ?>
+    </div>
+<?php endforeach ?>

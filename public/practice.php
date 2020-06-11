@@ -32,7 +32,7 @@ $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
 
 $app->get('/', function ($request, $response) {
-    return $this->get('renderer')->render($response, 'index.phtml');
+    return $this->get('renderer')->render($response, 'index-practice.phtml');
 });
 
 // BEGIN
@@ -82,7 +82,7 @@ $app->get('/users', function ($request, $response) use ($users) {
     $params = [
         'users' => $users
     ];
-    return $this->get('renderer')->render($response, 'users/index.phtml', $params);
+    return $this->get('renderer')->render($response, 'users/index-practice.phtml', $params);
 });
 
 $app->get('/users/{id}', function ($request, $response, $args) use ($users) {

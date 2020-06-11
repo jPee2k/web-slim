@@ -16,6 +16,7 @@
         "php-di/php-di": "^6.1",
         "guzzlehttp/guzzle": "^6.5",
         "fzaninotto/faker": "^1.9",
-        "tightenco/collect": "^7.12"
+        "tightenco/collect": "^7.12",
+        "danielstjules/stringy": "^3.1"
     }
 }

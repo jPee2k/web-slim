@@ -6,15 +6,21 @@ require __DIR__ . '/../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 use DI\Container;
 
+use function Stringy\create as str;
+
 $container = new Container();
 $container->set('renderer', function () {
     // Параметром передается базовая директория в которой будут храниться шаблоны
     return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
 });
 
-//$app = AppFactory::create();
+// $app = AppFactory::create();
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
+
+// ------ GLOBALS ------ //
+
+$users = ['mike', 'mishel', 'adel', 'keks', 'kamila'];
 
 // ------ INDEX ------ //
 
@@ -26,8 +32,14 @@ $app->get('/', function ($request, $response) {
 
 // ------ USERS ------ //
 
-$app->get('/users', function ($request, $response) {
-    return $response->write('GET /users');
+$app->get('/users', function ($request, $response) use ($users) {
+    $value = $request->getQueryParam('user');
+    $search = collect($users)->filter(function ($user) use ($value) {
+        return str($user)->contains($value);
+    })->all();
+    
+    $params = ['users' => $users, 'search' => $search, 'showRequest' => $value];
+    return $this->get('renderer')->render($response, 'users/index.phtml', $params);
 });
 
 $app->get('/users/{id}', function ($request, $response, $args) {
