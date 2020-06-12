@@ -63,7 +63,7 @@ return $this->get('renderer')->render($response, 'users/new.phtml', $params);
 
 $app->post('/users/register', function ($request, $response) use ($users) {
     $validator = new Validator();
-    $id = count($users);
+    $id = count($users) + 1;
     $user = $request->getParsedBodyParam('user');
     $user['id'] = $id;
     $errors = $validator->validate($user);

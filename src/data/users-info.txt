@@ -1,5 +1,7 @@
-{"name":"Garry","email":"show.me.your.tits@gmail.com","password":"phpforever","passwordConfirmation":"phpforever","id":3}
+{"name":"Garry","email":"show.me.your.tits@gmail.com","password":"phpforever","passwordConfirmation":"phpforever","id":1}
 {"name":"darie4ka","email":"zds91@fu.school","password":"zxc123","passwordConfirmation":"zxc123","id":2}
-{"name":"jane","email":"str@123","password":"fff","passwordConfirmation":"fff","id":2}
+{"name":"jane","email":"str@123","password":"fff","passwordConfirmation":"fff","id":3}
 {"name":"kipish","email":"kipishept@gmail.com","password":"123","passwordConfirmation":"123","id":4}
-{"name":"John","email":"smith.fucker@gmail.com","password":"haha","passwordConfirmation":"haha","id":4}
+{"name":"John","email":"smith.fucker@gmail.com","password":"haha","passwordConfirmation":"haha","id":5}
+{"name":"fu","email":"13@sosite.com","password":"444","passwordConfirmation":"444","id":6}
+{"name":"hope","email":"im.hope@mail.ru","password":"123","passwordConfirmation":"123","id":7}
