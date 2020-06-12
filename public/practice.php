@@ -6,6 +6,8 @@ use Slim\Factory\AppFactory;
 use Tightenco\Collect;
 use DI\Container;
 
+use function Stringy\create as s;
+
 // https://ru.hexlet.io/courses/php-mvc/lessons/handlers/theory_unit
 
 $faker = \Faker\Factory::create();
@@ -73,25 +75,42 @@ $app->get('/companies/{id:[0-9]+}', function ($request, $response, $args) use ($
 });
 // END
 
+/*
+ * // https://ru.hexlet.io/courses/php-mvc/lessons/template/theory_unit
+ * $users = Web\Dev\UsersGenerator::generate(100);
+ * 
+ * // BEGIN
+ * $app->get('/users', function ($request, $response) use ($users) {
+ *     $params = [
+ *         'users' => $users
+ *     ];
+ *     return $this->get('renderer')->render($response, 'users/index-practice.phtml', $params);
+ * });
+ * 
+ * $app->get('/users/{id}', function ($request, $response, $args) use ($users) {
+ *     $id = (int) $args['id'];
+ *     $user = collect($users)->firstWhere('id', $id);
+ *     $params = ['user' => $user];
+ *     return $this->get('renderer')->render($response, 'users/show-practice.phtml', $params);
+ * });
+ * // END
+*/
 
-// https://ru.hexlet.io/courses/php-mvc/lessons/template/theory_unit
+// https://ru.hexlet.io/courses/php-mvc/lessons/get-form/theory_unit
 $users = Web\Dev\UsersGenerator::generate(100);
 
 // BEGIN
 $app->get('/users', function ($request, $response) use ($users) {
+    $term = $request->getQueryParam('term');
+    $result = collect($users)->filter(function ($user) use ($term) {
+        return s($user['firstName'])->startsWith($term, false);
+    });
     $params = [
-        'users' => $users
+        'users' => $result,
+        'term' => $term
     ];
     return $this->get('renderer')->render($response, 'users/index-practice.phtml', $params);
 });
-
-$app->get('/users/{id}', function ($request, $response, $args) use ($users) {
-    $id = (int) $args['id'];
-    $user = collect($users)->firstWhere('id', $id);
-    $params = ['user' => $user];
-    return $this->get('renderer')->render($response, 'users/show-practice.phtml', $params);
-});
 // END
-
 
 $app->run();
