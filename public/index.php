@@ -5,6 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Slim\Factory\AppFactory;
 use DI\Container;
+use Web\Dev\Validator;
 
 use function Stringy\create as str;
 
@@ -20,7 +21,9 @@ $app->addErrorMiddleware(true, true, true);
 
 // ------ GLOBALS ------ //
 
-$users = ['mike', 'mishel', 'adel', 'keks', 'kamila'];
+$data = file_get_contents(__DIR__ . '/../src/data/users-info.txt');
+$preparedUsersData = explode(PHP_EOL, $data);
+$users = collect($preparedUsersData)->filter()->all();
 
 // ------ INDEX ------ //
 
@@ -34,12 +37,54 @@ $app->get('/', function ($request, $response) {
 
 $app->get('/users', function ($request, $response) use ($users) {
     $value = $request->getQueryParam('user');
-    $search = collect($users)->filter(function ($user) use ($value) {
-        return str($user)->contains($value);
-    })->all();
+    if ($value !== null) {
+        $search = collect($users)->filter(function ($user) use ($value) {
+            $decodedUser = json_decode($user, true);
+            return str($decodedUser['name'])->contains($value, false);
+        })->all();
     
-    $params = ['users' => $users, 'search' => $search, 'showRequest' => $value];
+        $params = ['users' => $users, 'search' => $search, 'showRequest' => $value];
+    } else {
+        $params = ['users' => $users];
+    }
+    
     return $this->get('renderer')->render($response, 'users/index.phtml', $params);
+});
+
+$app->get('/users/register', function ($request, $response) {
+
+    $params = [
+        'user' => ['name' => '', 'email' => '', 'password' => '', 'passwordConfirmation' => '', 'city' => ''],
+        'errors' => []
+    ];
+
+return $this->get('renderer')->render($response, 'users/new.phtml', $params);
+});
+
+$app->post('/users/register', function ($request, $response) use ($users) {
+    $validator = new Validator();
+    $id = count($users);
+    $user = $request->getParsedBodyParam('user');
+    $user['id'] = $id;
+    $errors = $validator->validate($user);
+
+    $file = __DIR__ . '/../src/data/users-info.txt';
+    if (count($errors) === 0) {
+        $preparedUser = json_encode($user) . PHP_EOL;
+        if (file_exists($file)) {
+            file_put_contents($file, $preparedUser, FILE_APPEND | LOCK_EX);
+        } else {
+            return $response->write('Оопс, что-то пошло не так');
+        }
+        return $response->withRedirect('/users', 302);
+    }
+
+    $params = [
+        'user' => $user,
+        'errors' => $errors
+    ];
+
+    return $this->get('renderer')->render($response->withStatus(422), 'users/new.phtml', $params);
 });
 
 $app->get('/users/{id}', function ($request, $response, $args) {

@@ -1,0 +1,39 @@
+<form action="/users/register" method="post">
+    <div>
+        <label>
+            Login
+            <input type="text" name="user[name]" value="<?= htmlspecialchars($user['name']) ?>" required>
+        </label>
+        <?php if (isset($errors['name'])): ?>
+            <div><?= $errors['name'] ?></div>
+        <?php endif ?>
+    </div>
+    <div>
+        <label>
+            Email
+            <input type="email" name="user[email]" value="<?= htmlspecialchars($user['email']) ?>" required>
+        </label>
+        <?php if (isset($errors['email'])): ?>
+            <div><?= $errors['email'] ?></div>
+        <?php endif ?>
+    </div>
+    <div>
+        <label>
+            Password
+            <input type="password" name="user[password]" required>
+        </label>
+        <?php if (isset($errors['password'])): ?>
+            <div><?= $errors['password'] ?></div>
+        <?php endif ?>
+    </div>
+    <div>
+        <label>
+            Password Confirmation
+            <input type="password" name="user[passwordConfirmation]" required>
+        </label>
+        <?php if (isset($errors['passwordConfirmation'])): ?>
+            <div><?= $errors['passwordConfirmation'] ?></div>
+        <?php endif ?>
+    </div>
+    <input type="submit" value="Sing Up">
+</form>

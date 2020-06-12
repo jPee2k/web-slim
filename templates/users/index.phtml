@@ -1,18 +1,42 @@
-<?php foreach ($users as $user): ?>
-    <div>
-        <?= htmlspecialchars($user) ?>
-    </div>
-<?php endforeach ?>
-
 <!-- SEARCHING FORM -->
 <form action="/users" method="GET">
-    <input type="search" name="user" value="<?= htmlspecialchars($showRequest) ?>" required>
+    <?php if (isset($showRequest)): ?>
+        <input type="search" name="user" value="<?= htmlspecialchars($showRequest) ?>" required>
+    <?php else: ?>
+        <input type="search" name="user" required>
+    <?php endif ?>
     <input type="submit" value="search">
 </form>
 
-<!-- RESULT -->
-<?php foreach ($search as $find): ?>
-    <div>
-        <?= htmlspecialchars($find) ?>
-    </div>
+<!-- EXIST USERS -->
+<h3>Registered users</h3>
+<table>
+<?php
+    foreach ($users as $user):
+        $showUserData = json_decode($user, true);
+?>
+    <tr>
+        <td><?= htmlspecialchars($showUserData['id']) ?></td>
+        <td><?= htmlspecialchars($showUserData['name']) ?></td>
+        <td><?= htmlspecialchars($showUserData['email']) ?></td>
+    </tr>
+
 <?php endforeach ?>
+</table>
+
+<!-- RESULT -->
+<?php if (isset($showRequest)): ?>
+<h3>Users found for &quot;<?= $showRequest ?>&quot;</h3>
+<table>
+<?php
+    foreach ($search as $find):
+        $showResult = json_decode($find, true);
+?>
+    <tr>
+        <td><?= htmlspecialchars($showResult['id']) ?></td>
+        <td><?= htmlspecialchars($showResult['name']) ?></td>
+        <td><?= htmlspecialchars($showResult['email']) ?></td>
+    </tr>
+<?php endforeach ?>
+</table>
+<?php endif ?>
