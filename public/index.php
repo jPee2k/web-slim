@@ -51,7 +51,7 @@ $app->get('/users', function ($request, $response) use ($users) {
     return $this->get('renderer')->render($response, 'users/index.phtml', $params);
 });
 
-$app->get('/users/register', function ($request, $response) {
+$app->get('/users/new', function ($request, $response) {
 
     $params = [
         'user' => ['name' => '', 'email' => '', 'password' => '', 'passwordConfirmation' => '', 'city' => ''],
@@ -61,7 +61,7 @@ $app->get('/users/register', function ($request, $response) {
 return $this->get('renderer')->render($response, 'users/new.phtml', $params);
 });
 
-$app->post('/users/register', function ($request, $response) use ($users) {
+$app->post('/users/new', function ($request, $response) use ($users) {
     $validator = new Validator();
     $id = count($users) + 1;
     $user = $request->getParsedBodyParam('user');

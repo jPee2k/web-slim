@@ -17,8 +17,8 @@
 ?>
     <tr>
         <td><?= htmlspecialchars($showUserData['id']) ?></td>
-        <td><?= htmlspecialchars($showUserData['name']) ?></td>
-        <td><?= htmlspecialchars($showUserData['email']) ?></td>
+        <td><?= htmlspecialchars(strtolower($showUserData['name'])) ?></td>
+        <td><?= htmlspecialchars(strtolower($showUserData['email'])) ?></td>
     </tr>
 
 <?php endforeach ?>
