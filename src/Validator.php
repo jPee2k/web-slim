@@ -24,7 +24,7 @@ class Validator
             $this->errors['passwordConfirmation'] = "Поле Password Confirmation обязательное для заполения";
         }
 
-        if (($user['passwordConfirmation']) !== ($user['password'])) {
+        if (password_verify($user['password'], $user['passwordConfirmation'])) {
             $this->errors['passwordConfirmation'] = "Пароли не совпадают";
         }
 

@@ -54,7 +54,7 @@ $app->get('/users', function ($request, $response) use ($users) {
 $app->get('/users/new', function ($request, $response) {
 
     $params = [
-        'user' => ['name' => '', 'email' => '', 'password' => '', 'passwordConfirmation' => '', 'city' => ''],
+        'user' => ['name' => '', 'email' => '', 'password' => '', 'passwordConfirmation' => ''],
         'errors' => []
     ];
 
@@ -63,9 +63,10 @@ return $this->get('renderer')->render($response, 'users/new.phtml', $params);
 
 $app->post('/users/new', function ($request, $response) use ($users) {
     $validator = new Validator();
-    $id = count($users) + 1;
     $user = $request->getParsedBodyParam('user');
-    $user['id'] = $id;
+    $user['id'] = uniqid();
+    $user['password'] = password_hash($user['password'], PASSWORD_BCRYPT);
+    $user['passwordConfirmation'] = password_hash($user['passwordConfirmation'], PASSWORD_BCRYPT);
     $errors = $validator->validate($user);
 
     $file = __DIR__ . '/../src/data/users-info.txt';
