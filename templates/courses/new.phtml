@@ -1,0 +1,23 @@
+<!-- https://ru.hexlet.io/courses/php-mvc/lessons/post-form/theory_unit -->
+<!-- BEGIN (write your solution here) -->
+<form action="/courses" method="post">
+    <label>
+        Paid
+        <select name="course[paid]">
+            <option <?= $course['paid'] === true ? 'selected' : '' ?> value="true">Pay</option>
+            <option <?= $course['paid'] === false ? 'selected' : '' ?> value="false">Free</option>
+        </select>
+        <?php if (isset($errors['paid'])): ?>
+            <div><?= $errors['paid'] ?></div>
+        <?php endif ?>
+    </label>
+    <label>
+        Title
+        <input type="text" name="course[title]" value="<?= htmlspecialchars($course['title']) ?>" required>
+        <?php if (isset($errors['title'])): ?>
+            <div><?= htmlspecialchars($errors['title']) ?></div>
+        <?php endif ?>    
+    </label>
+    <input type="submit" value="Create">
+</form>
+<!-- END -->

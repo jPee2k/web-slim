@@ -5,6 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 use Tightenco\Collect;
 use DI\Container;
+use Web\Dev\ValidatorPractice;
 
 use function Stringy\create as s;
 
@@ -34,7 +35,7 @@ $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
 
 $app->get('/', function ($request, $response) {
-    return $this->get('renderer')->render($response, 'index-practice.phtml');
+    return $this->get('renderer')->render($response, 'index.phtml');
 });
 
 // BEGIN
@@ -112,5 +113,46 @@ $app->get('/users', function ($request, $response) use ($users) {
     return $this->get('renderer')->render($response, 'users/index-practice.phtml', $params);
 });
 // END
+
+
+// https://ru.hexlet.io/courses/php-mvc/lessons/post-form/theory_unit
+$repo = new Web\Dev\CourseRepository();
+
+$app->get('/courses', function ($request, $response) use ($repo) {
+    $params = [
+        'courses' => $repo->all()
+    ];
+    return $this->get('renderer')->render($response, 'courses/index.phtml', $params);
+});
+
+// BEGIN (write your solution here)
+$app->get('/courses/new', function ($request, $response) {
+    $params = [
+        'course' => ['title' => '', 'paid' => ''],
+        'errors' => []
+    ];
+
+    return $this->get('renderer')->render($response, 'courses/new.phtml', $params);
+});
+
+$app->post('/courses', function ($request, $response) use ($repo) {
+    $validator = new ValidatorPractice();
+    $course = $request->getParsedBodyParam('course');
+    $errors = $validator->validate($course);
+
+    if (count($errors) === 0) {
+        $repo->save($course);
+        return $response->withRedirect('/courses', 302);
+    }
+
+    $param = [
+        'course' => $course,
+        'errors' => $errors
+    ];
+
+    return $this->get('renderer')->render($response->withStatus(422), '/courses/new.phtml', $param);
+});
+// END
+
 
 $app->run();
