@@ -1,5 +1,5 @@
 <!-- SEARCHING FORM -->
-<form action="/users" method="GET">
+<form action="<?= $router->urlFor('users') ?>" method="GET">
     <?php if (isset($showRequest)): ?>
         <input type="search" name="user" value="<?= htmlspecialchars($showRequest) ?>" required>
     <?php else: ?>
@@ -7,6 +7,14 @@
     <?php endif ?>
     <input type="submit" value="search">
 </form>
+
+<?php if (count($messages) > 0): ?>
+    <?php foreach ($messages as $message): ?>
+        <?php foreach ($message as $text): ?>
+            <div><?= htmlspecialchars($text) ?></div>
+        <?php endforeach ?>
+    <?php endforeach ?>
+<?php endif ?>
 
 <!-- EXIST USERS -->
 <h3>Registered users</h3>

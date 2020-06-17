@@ -1,6 +1,5 @@
 <!-- // https://ru.hexlet.io/courses/php-mvc/lessons/template/theory_unit -->
-<a href="/phones">Phones</a>
-<a href="/domains">Domains</a>
-<a href="/companies">Companies</a>
-<a href="/users">Users</a>
-<a href="/courses">Courses</a>
+<a href="<?= $router->urlFor('companies') ?>">Companies</a>
+<a href="<?= $router->urlFor('users') ?>">Users</a>
+<a href="<?= $router->urlFor('new') ?>">New User</a>
+<a href="/courses/1">Courses</a>
