@@ -92,11 +92,15 @@ return $this->get('renderer')->render($response, 'users/new.phtml', $params);
 })->setName('new');
 
 
-$app->post('/users', function ($request, $response) use ($users, $router) {
-    $validator = new Validator();
+$app->post('/users', function ($request, $response) use ($router) {
     $user = $request->getParsedBodyParam('user');
     $user['id'] = uniqid();
+    $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
+
+    $validator = new Validator();
     $errors = $validator->validate($user);
+
+    unset($user['passwordConfirmation']);
 
     $file = __DIR__ . '/../src/data/users-info.txt';
     if (count($errors) === 0) {

@@ -2,7 +2,7 @@
     <div>
         <label>
             Login
-            <input type="text" name="user[name]" value="<?= htmlspecialchars($user['name']) ?>" required>
+            <input type="text" name="user[name]" value="<?= htmlspecialchars($user['name']) ?>">
         </label>
         <?php if (isset($errors['name'])): ?>
             <div><?= $errors['name'] ?></div>
