@@ -1,24 +1,32 @@
 <!-- MAIN PAGE -->
 <a href="/">Main Page</a>
 
-<!-- REGISTRATION FORM -->
-<form action="<?= $router->urlFor('users') ?>" method="post">
+<?php if (count($flash) > 0): ?>
+    <?php foreach ($flash as $messages): ?>
+        <?php foreach ($messages as $message): ?>
+            <div><?= htmlspecialchars($message) ?></div>
+        <?php endforeach ?>
+    <?php endforeach ?>
+<?php endif ?>
+
+<form action="/users/<?= htmlspecialchars($user['id']) ?>" method="post">
+    <input type="hidden" name="_METHOD" value="PATCH">
     <div>
         <label>
-            Login
-            <input type="text" name="user[name]" value="<?= htmlspecialchars($user['name']) ?>">
+            Name
+            <input type="text" name="user[name]" value="<?= htmlspecialchars($user['name'] ?? '') ?>" required>
         </label>
         <?php if (isset($errors['name'])): ?>
-            <div><?= $errors['name'] ?></div>
+            <?= $errors['name'] ?>
         <?php endif ?>
     </div>
     <div>
         <label>
             Email
-            <input type="email" name="user[email]" value="<?= htmlspecialchars($user['email']) ?>" required>
+            <input type="text" name="user[email]" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required>
         </label>
         <?php if (isset($errors['email'])): ?>
-            <div><?= $errors['email'] ?></div>
+            <?= $errors['email'] ?>
         <?php endif ?>
     </div>
     <div>
@@ -39,5 +47,5 @@
             <div><?= $errors['passwordConfirmation'] ?></div>
         <?php endif ?>
     </div>
-    <input type="submit" value="Sing Up">
+    <input type="submit" value="Update">
 </form>

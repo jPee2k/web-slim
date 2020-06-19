@@ -6,7 +6,10 @@
         "email": "kipishept@gmail.com"
     }],
     "autoload": {
-        "psr-4": { "Web\\Dev\\": "src/" }
+        "psr-4": { "Web\\Dev\\": "src/" },
+        "files": [
+            "src/Users.php"
+        ]
     },
     "require": {
         "slim/slim": "^4.5",

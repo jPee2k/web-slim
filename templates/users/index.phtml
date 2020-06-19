@@ -1,10 +1,9 @@
+<!-- MAIN PAGE -->
+<a href="/">Main Page</a>
+
 <!-- SEARCHING FORM -->
 <form action="<?= $router->urlFor('users') ?>" method="GET">
-    <?php if (isset($showRequest)): ?>
-        <input type="search" name="user" value="<?= htmlspecialchars($showRequest) ?>" required>
-    <?php else: ?>
-        <input type="search" name="user" required>
-    <?php endif ?>
+    <input type="search" name="user" value="<?= htmlspecialchars($queryParam) ?? '' ?>" required>
     <input type="submit" value="search">
 </form>
 
@@ -20,30 +19,29 @@
 <h3>Registered users</h3>
 <table>
 <?php
+    $users = json_decode($users, true);
     foreach ($users as $user):
-        $showUserData = json_decode($user, true);
 ?>
     <tr>
-        <td><?= htmlspecialchars($showUserData['id']) ?></td>
-        <td><?= htmlspecialchars(strtolower($showUserData['name'])) ?></td>
-        <td><?= htmlspecialchars(strtolower($showUserData['email'])) ?></td>
+        <td><a href="/users/<?= htmlspecialchars($user['id']) ?>"><?= htmlspecialchars(strtolower($user['name'])) ?></a></td>
+        <td><?= htmlspecialchars(strtolower($user['email'])) ?></td>
     </tr>
 
 <?php endforeach ?>
 </table>
 
 <!-- RESULT -->
-<?php if (isset($showRequest)): ?>
-<h3>Users found for &quot;<?= $showRequest ?>&quot;</h3>
+<?php if ($queryParam !== ''): ?>
+<h3>Users found for &quot;<?= $queryParam ?>&quot;</h3>
 <table>
 <?php
-    foreach ($search as $find):
-        $showResult = json_decode($find, true);
+    $search = json_decode($search, true);
+    foreach ($search as $result):
 ?>
     <tr>
-        <td><?= htmlspecialchars($showResult['id']) ?></td>
-        <td><?= htmlspecialchars($showResult['name']) ?></td>
-        <td><?= htmlspecialchars($showResult['email']) ?></td>
+        <td><?= htmlspecialchars($result['id']) ?></td>
+        <td><?= htmlspecialchars($result['name']) ?></td>
+        <td><?= htmlspecialchars($result['email']) ?></td>
     </tr>
 <?php endforeach ?>
 </table>

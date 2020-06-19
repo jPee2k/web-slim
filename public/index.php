@@ -4,8 +4,13 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Slim\Factory\AppFactory;
+use Slim\Middleware\MethodOverrideMiddleware;
 use DI\Container;
 use Web\Dev\Validator;
+
+use function Web\Dev\Users\usersData;
+use function Web\Dev\Users\findUserById;
+use function Web\Dev\Users\putContents;
 
 use function Stringy\create as str;
 
@@ -26,20 +31,9 @@ $container->set('flash', function () {
 
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
+$app->add(MethodOverrideMiddleware::class);
 
 $router = $app->getRouteCollector()->getRouteParser();
-
-// ------ GLOBALS ------ //
-
-$path = __DIR__ . '/../src/data/users-info.txt';
-
-if (file_exists($path)) {
-    $data = file_get_contents($path);
-    $preparedUsersData = explode(PHP_EOL, $data);
-    $users = collect($preparedUsersData)->filter()->all();
-} else {
-    $users = [];
-}
 
 // ------ INDEX ------ //
 
@@ -56,30 +50,33 @@ $app->get('/', function ($request, $response) use ($router) {
 
 // ------ USERS ------ //
 
-$app->get('/users', function ($request, $response) use ($users, $router) {
+// SHOW USERS
+$app->get('/users', function ($request, $response) use ($router) {
+    $users = usersData();
     $value = $request->getQueryParam('user');
     $messages = $this->get('flash')->getMessages();
 
     $params = [
-        'users' => $users,
+        'users' => json_encode($users),
         'router' => $router,
-        'messages' => $messages
+        'messages' => $messages,
+        'search' => [],
+        'queryParam' => ''
     ];
 
     if ($value !== null) {
         $search = collect($users)->filter(function ($user) use ($value) {
-            $decodedUser = json_decode($user, true);
-            return str($decodedUser['name'])->contains($value, false);
+            return str($user['name'])->contains($value, false);
         })->all();
     
-        $params['search'] = $search;
-        $params['showRequest'] = $value;
+        $params['search'] = json_encode($search);
+        $params['queryParam'] = $value;
     }
     
     return $this->get('renderer')->render($response, 'users/index.phtml', $params);
 })->setName('users');
 
-
+// REDIRECT to FORM CREATING
 $app->get('/users/new', function ($request, $response) use ($router) {
 
     $params = [
@@ -91,15 +88,17 @@ $app->get('/users/new', function ($request, $response) use ($router) {
 return $this->get('renderer')->render($response, 'users/new.phtml', $params);
 })->setName('new');
 
-
+// CREATING a new USER
 $app->post('/users', function ($request, $response) use ($router) {
     $user = $request->getParsedBodyParam('user');
-    $user['id'] = uniqid();
-    $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
-
+    if (!isset($user['id'])) {
+        $user['id'] = uniqid();
+    }
+    
     $validator = new Validator();
     $errors = $validator->validate($user);
 
+    $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
     unset($user['passwordConfirmation']);
 
     $file = __DIR__ . '/../src/data/users-info.txt';
@@ -124,27 +123,75 @@ $app->post('/users', function ($request, $response) use ($router) {
     return $this->get('renderer')->render($response->withStatus(422), 'users/new.phtml', $params);
 })->setName('users');
 
-
-$app->get('/users/{id}', function ($request, $response, $args) use ($router, $users) {
+// READING USER'S DATA
+$app->get('/users/{id}', function ($request, $response, $args) use ($router) {
     $id = $args['id'];
+    $users = usersData();
 
-    $usersById = collect($users)->map(function ($user) {
-        return json_decode($user, true);
-    })->keyBy('id')->all();
-    
-    if (!array_key_exists($id, $usersById)) {
+    if (!array_key_exists($id, $users)) {
         return $response->withStatus(404)->write("Oops, user with id: {$id} not found");
     }
 
     $params = [
         'id' => $id,
-        'nickname' => "user-{$usersById[$id]['name']}",
+        'nickname' => $users[$id]['name'],
         'router' => $router
     ];
 
     return $this->get('renderer')->render($response, 'users/show.phtml', $params);
 })->setName('user');
 
+// REDIRECTING to FORM UPDATING USER'S DATA
+$app->get('/users/{id}/edit', function ($request, $response, $args) {
+    $id = $args['id'];
+    $flash = $this->get('flash')->getMessages();
+
+    //$users = usersData();
+    $user = findUserById($id);
+
+    $params = [
+        'user' => $user,
+        'flash' => $flash,
+        'errors' => []
+    ];
+
+    return $this->get('renderer')->render($response, 'users/edit.phtml', $params);
+})->setName('editUser');
+
+// UPDATING USER'S DATA
+$app->patch('/users/{id}', function ($request, $response, array $args) use ($router) {
+    $id = $args['id'];
+    $user = findUserById($id);
+
+    $data = $request->getParsedBodyParam('user');
+
+    $validator = new Validator();
+    $errors = $validator->validate($data);
+
+    $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+    unset($data['passwordConfirmation']);
+
+    if (count($errors) === 0) {
+        $user['name'] = $data['name'];
+        $user['email'] = $data['email'];
+        $user['password'] = $data['password'];
+
+        // TODO REWRITE Exist user!!!!!
+        if (putContents($user)) {
+            $this->get('flash')->addMessage('succes', 'Your data has been updated');
+            return $response->withRedirect($router->urlFor('editUser', ['id' => $user['id']]));
+        } 
+    } else {
+        $this->get('flash')->addMessage('error', 'Ooh, crap! Your data wasn\'t updated');
+    }
+
+    $params = [
+        'user' => $user,
+        'errors' => $errors
+    ];
+
+    return $this->get('renderer')->render($response->withStatus(422), 'users/edit.phtml', $params);
+});
 
 // ------ COMPANIES ------ //
 
